@@ -1,0 +1,208 @@
+// Multi-tenant car booking schema.
+// Every business-table has tenantId. API middleware enforces tenant scoping.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id         String     @id @default(cuid())
+  slug       String     @unique
+  name       String
+  currency   String     @default("USD")
+  timezone   String     @default("America/New_York")
+  // Stripe secret (per-tenant). Stored as-is; consider KMS encryption for prod.
+  stripeKey  String?
+  // Arbitrary branding payload consumed by client frontends:
+  // { logoUrl, primaryColor, accentColor, fonts: {display, body}, tagline, ... }
+  branding   Json?
+  // Free-form fee config consumed by pricing engine:
+  // { taxRate: 0.06625, youngDriverFee: 25, airportFee: 0, cleaningFee: 0 }
+  fees       Json?
+
+  cars       Car[]
+  bookings   Booking[]
+  categories Category[]
+  locations  Location[]
+  users      User[]
+  reviews    Review[]
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model Category {
+  id          String @id @default(cuid())
+  tenantId    String
+  tenant      Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  slug        String
+  name        String
+  description String?
+  sortOrder   Int    @default(0)
+  imageUrl    String?
+
+  cars        Car[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+}
+
+model Location {
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name     String
+  address  String
+  city     String?
+  state    String?
+  zip      String?
+  lat      Float?
+  lng      Float?
+
+  cars     Car[]
+
+  pickupBookings  Booking[] @relation("PickupLocation")
+  dropoffBookings Booking[] @relation("DropoffLocation")
+
+  @@index([tenantId])
+}
+
+model Car {
+  id            String   @id @default(cuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+
+  make          String
+  model         String
+  year          Int
+  trim          String?
+  seats         Int      @default(5)
+  doors         Int      @default(4)
+  transmission  String   @default("automatic") // automatic | manual
+  fuelType      String   @default("gas")       // gas | hybrid | ev | diesel
+  mpg           Int?
+  features      String[]
+  images        String[]
+  color         String?
+
+  dailyRate     Decimal  @db.Decimal(10, 2)
+  weeklyRate    Decimal? @db.Decimal(10, 2)
+  monthlyRate   Decimal? @db.Decimal(10, 2)
+  depositAmount Decimal  @default(200) @db.Decimal(10, 2)
+  mileageLimit  Int?
+
+  locationId    String?
+  location      Location? @relation(fields: [locationId], references: [id])
+
+  status        String   @default("active") // active | maintenance | retired
+  description   String?
+
+  bookings      Booking[]
+  reviews       Review[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([categoryId])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email         String
+  passwordHash  String?
+  phone         String?
+  firstName     String
+  lastName      String
+  dateOfBirth   DateTime?
+  licenseNumber String?
+  licenseExpiry DateTime?
+  licenseImage  String?
+  role          String    @default("customer") // customer | staff | admin
+  emailVerified Boolean   @default(false)
+
+  bookings      Booking[]
+  reviews       Review[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model Booking {
+  id                String   @id @default(cuid())
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  carId             String
+  car               Car      @relation(fields: [carId], references: [id])
+
+  pickupLocationId  String?
+  pickupLocation    Location? @relation("PickupLocation", fields: [pickupLocationId], references: [id])
+  dropoffLocationId String?
+  dropoffLocation   Location? @relation("DropoffLocation", fields: [dropoffLocationId], references: [id])
+
+  startDate         DateTime
+  endDate           DateTime
+
+  // Pricing breakdown (persisted at booking time)
+  days              Int
+  dailyRate         Decimal  @db.Decimal(10, 2)
+  subtotal          Decimal  @db.Decimal(10, 2)
+  taxes             Decimal  @db.Decimal(10, 2)
+  fees              Decimal  @db.Decimal(10, 2)
+  depositHeld       Decimal  @db.Decimal(10, 2)
+  totalAmount       Decimal  @db.Decimal(10, 2)
+
+  status            String   @default("pending") // pending | confirmed | in_progress | completed | cancelled | refunded
+
+  stripePaymentId   String?
+  stripeDepositId   String?
+  notes             String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  review            Review?
+
+  @@index([tenantId, status])
+  @@index([carId, startDate, endDate])
+  @@index([userId])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  bookingId  String   @unique
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  carId      String
+  car        Car      @relation(fields: [carId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  rating     Int
+  title      String?
+  body       String
+  approved   Boolean  @default(false)
+  adminReply String?
+
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, approved])
+  @@index([carId])
+}

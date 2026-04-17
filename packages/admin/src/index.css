@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-bg text-text; }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  input, select, textarea {
+    @apply bg-surface border border-border rounded-md px-3 py-2 text-sm outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40;
+  }
+  label { @apply text-xs font-medium text-muted uppercase tracking-wide block mb-1; }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition
+           focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer;
+  }
+  .btn-primary { @apply btn bg-primary text-white hover:bg-primary/90; }
+  .btn-secondary { @apply btn bg-surface border border-border text-text hover:border-primary/50; }
+  .btn-ghost { @apply btn text-text hover:bg-surface; }
+  .card { @apply bg-surface border border-border rounded-lg; }
+  .badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide; }
+  .badge-pending { @apply badge bg-accent/15 text-accent; }
+  .badge-confirmed { @apply badge bg-emerald-500/15 text-emerald-400; }
+  .badge-in_progress { @apply badge bg-sky-500/15 text-sky-400; }
+  .badge-completed { @apply badge bg-slate-500/20 text-slate-300; }
+  .badge-cancelled { @apply badge bg-red-500/15 text-red-400; }
+  .badge-refunded { @apply badge bg-orange-500/15 text-orange-400; }
+  .table-row { @apply border-b border-border hover:bg-bg/50; }
+}
