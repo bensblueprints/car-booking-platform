@@ -7,7 +7,7 @@ export interface PricingInput {
   end: Date;
   fees?: {
     taxRate?: number;            // 0.06625 = 6.625%
-    youngDriverFee?: number;     // flat
+    youngDriverFee?: number;     // per day
     airportFee?: number;
     cleaningFee?: number;
   } | null;
@@ -69,8 +69,9 @@ export function quoteBooking(input: PricingInput): Quote {
   const f = input.fees ?? {};
   let fees = 0;
   if (input.youngDriver && f.youngDriverFee) {
-    fees += f.youngDriverFee;
-    breakdown.push({ label: 'Young driver fee', amount: f.youngDriverFee });
+    const youngDriverTotal = r2(f.youngDriverFee * days);
+    fees += youngDriverTotal;
+    breakdown.push({ label: `Young driver fee (${days} day${days > 1 ? 's' : ''} × ${f.youngDriverFee.toFixed(2)})`, amount: youngDriverTotal });
   }
   if (input.airportPickup && f.airportFee) {
     fees += f.airportFee;
