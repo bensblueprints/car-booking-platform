@@ -9,8 +9,10 @@ import Categories from './pages/Categories';
 import Locations from './pages/Locations';
 import Bookings from './pages/Bookings';
 import BookingDetail from './pages/BookingDetail';
+import BookingNew from './pages/BookingNew';
 import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
+import CustomerNew from './pages/CustomerNew';
 import Reviews from './pages/Reviews';
 import Settings from './pages/Settings';
 
@@ -37,8 +39,10 @@ export default function App() {
         <Route path="categories" element={<Categories />} />
         <Route path="locations" element={<Locations />} />
         <Route path="bookings" element={<Bookings />} />
+        <Route path="bookings/new" element={<BookingNew />} />
         <Route path="bookings/:id" element={<BookingDetail />} />
         <Route path="customers" element={<Customers />} />
+        <Route path="customers/new" element={<CustomerNew />} />
         <Route path="customers/:id" element={<CustomerDetail />} />
         <Route path="reviews" element={<Reviews />} />
         <Route path="settings" element={<Settings />} />

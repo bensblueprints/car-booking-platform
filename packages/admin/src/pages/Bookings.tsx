@@ -15,14 +15,15 @@ export default function Bookings() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-3">
         <h1 className="text-3xl font-display">Bookings</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center flex-wrap">
           {statuses.map((s) => (
             <button key={s} onClick={() => setStatus(s)} className={`btn text-xs px-3 py-1 ${status === s ? 'bg-primary text-white' : 'bg-surface border border-border'}`}>
               {s.replace('_', ' ')}
             </button>
           ))}
+          <Link to="/bookings/new" className="btn bg-primary text-white px-3 py-1 rounded text-sm">+ New booking</Link>
         </div>
       </div>
       <div className="card overflow-x-auto">

@@ -12,7 +12,10 @@ export default function Customers() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-display">Customers</h1>
-        <input placeholder="Search email, name, phone…" className="w-80" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <div className="flex gap-2">
+          <input placeholder="Search email, name, phone…" className="w-80" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Link to="/customers/new" className="btn bg-primary text-white px-3 py-1 rounded text-sm">+ New customer</Link>
+        </div>
       </div>
       <div className="card overflow-hidden">
         <table className="w-full text-sm">

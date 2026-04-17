@@ -103,6 +103,8 @@ export class CarBookingClient {
 
     bookings: (status?: string) => this.req<Booking[]>(`/v1/admin/bookings${status ? `?status=${status}` : ''}`),
     booking: (id: string) => this.req<Booking>(`/v1/admin/bookings/${id}`),
+    createBooking: (body: any) =>
+      this.req<Booking>(`/v1/admin/bookings`, { method: 'POST', body: JSON.stringify(body) }),
     updateBooking: (id: string, body: { status?: string; notes?: string }) =>
       this.req<Booking>(`/v1/admin/bookings/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
 
@@ -114,6 +116,9 @@ export class CarBookingClient {
     stats: () => this.req<any>(`/v1/admin/stats`),
     customers: (search?: string) => this.req<any[]>(`/v1/admin/customers${search ? `?search=${encodeURIComponent(search)}` : ''}`),
     customer: (id: string) => this.req<any>(`/v1/admin/customers/${id}`),
+    createCustomer: (body: any) => this.req<any>(`/v1/admin/customers`, { method: 'POST', body: JSON.stringify(body) }),
+    updateCustomer: (id: string, body: any) =>
+      this.req<any>(`/v1/admin/customers/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
 
     tenant: () => this.req<any>(`/v1/admin/tenant`),
     updateTenant: (body: any) => this.req<any>(`/v1/admin/tenant`, { method: 'PATCH', body: JSON.stringify(body) }),
