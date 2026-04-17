@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Fleet from './pages/Fleet';
 import FleetEdit from './pages/FleetEdit';
+import FleetCalendar from './pages/FleetCalendar';
 import Categories from './pages/Categories';
 import Locations from './pages/Locations';
 import Bookings from './pages/Bookings';
@@ -35,6 +36,7 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="fleet" element={<Fleet />} />
         <Route path="fleet/new" element={<FleetEdit />} />
+        <Route path="fleet/:id/calendar" element={<FleetCalendar />} />
         <Route path="fleet/:id" element={<FleetEdit />} />
         <Route path="categories" element={<Categories />} />
         <Route path="locations" element={<Locations />} />

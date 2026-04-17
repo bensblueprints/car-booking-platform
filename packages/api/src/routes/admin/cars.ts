@@ -53,6 +53,20 @@ export default async function adminCarRoutes(app: FastifyInstance) {
     return app.prisma.car.update({ where: { id }, data: parsed.data });
   });
 
+  app.get('/v1/admin/cars/:id/bookings', { preHandler: [app.requireAdmin] }, async (req, reply) => {
+    const { id } = req.params as { id: string };
+    const car = await app.prisma.car.findFirst({ where: { id, tenantId: req.tenantId } });
+    if (!car) return reply.code(404).send({ error: 'Car not found' });
+    return app.prisma.booking.findMany({
+      where: { carId: id, tenantId: req.tenantId },
+      select: {
+        id: true, startDate: true, endDate: true, status: true, totalAmount: true,
+        user: { select: { id: true, firstName: true, lastName: true, email: true } },
+      },
+      orderBy: { startDate: 'asc' },
+    });
+  });
+
   app.delete('/v1/admin/cars/:id', { preHandler: [app.requireAdmin] }, async (req, reply) => {
     const { id } = req.params as { id: string };
     const car = await app.prisma.car.findFirst({ where: { id, tenantId: req.tenantId } });

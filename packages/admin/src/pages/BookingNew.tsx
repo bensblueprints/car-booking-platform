@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 
@@ -11,9 +11,10 @@ const today = (off = 0) => {
 
 export default function BookingNew() {
   const nav = useNavigate();
+  const [params] = useSearchParams();
   const [form, setForm] = useState({
     userId: '',
-    carId: '',
+    carId: params.get('carId') ?? '',
     start: today(0),
     end: today(2),
     pickupLocationId: '',

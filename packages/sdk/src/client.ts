@@ -90,6 +90,7 @@ export class CarBookingClient {
     createCar: (body: any) => this.req<Car>(`/v1/admin/cars`, { method: 'POST', body: JSON.stringify(body) }),
     updateCar: (id: string, body: any) => this.req<Car>(`/v1/admin/cars/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
     deleteCar: (id: string) => this.req<Car>(`/v1/admin/cars/${id}`, { method: 'DELETE' }),
+    carBookings: (id: string) => this.req<any[]>(`/v1/admin/cars/${id}/bookings`),
 
     categories: () => this.req<Category[]>(`/v1/categories`),
     createCategory: (body: any) => this.req<Category>(`/v1/admin/categories`, { method: 'POST', body: JSON.stringify(body) }),

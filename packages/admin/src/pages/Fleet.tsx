@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Plus, Pencil } from 'lucide-react';
+import { Plus, Pencil, Calendar } from 'lucide-react';
 import { api } from '../lib/api';
 
 export default function Fleet() {
@@ -47,9 +47,16 @@ export default function Fleet() {
                     {c.status}
                   </span>
                 </td>
-                <td className="py-3 px-4">{c._count?.bookings ?? 0}</td>
+                <td className="py-3 px-4">
+                  <Link to={`/fleet/${c.id}/calendar`} className="inline-flex items-center gap-1 text-primary hover:underline">
+                    <Calendar size={12} /> {c._count?.bookings ?? 0}
+                  </Link>
+                </td>
                 <td className="py-3 px-4 text-right">
-                  <Link to={`/fleet/${c.id}`} className="btn-ghost inline-flex"><Pencil size={14} /></Link>
+                  <div className="flex justify-end gap-1">
+                    <Link to={`/fleet/${c.id}/calendar`} className="btn-ghost inline-flex" title="Calendar"><Calendar size={14} /></Link>
+                    <Link to={`/fleet/${c.id}`} className="btn-ghost inline-flex" title="Edit"><Pencil size={14} /></Link>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -71,6 +71,8 @@ export interface Car {
   mileageLimit: number | null;
   status: 'active' | 'maintenance' | 'retired';
   description: string | null;
+  vin: string | null;
+  licensePlate: string | null;
   averageRating?: number | null;
   reviewCount?: number;
 }
