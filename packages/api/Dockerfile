@@ -4,7 +4,8 @@ RUN corepack enable
 COPY package.json pnpm-workspace.yaml tsconfig.base.json ./
 COPY packages/api/package.json packages/api/
 COPY packages/api/prisma packages/api/prisma
-RUN pnpm install --filter @carbooking/api... --frozen-lockfile=false
+ENV NODE_ENV=development
+RUN pnpm install --filter @carbooking/api... --frozen-lockfile=false --prod=false
 COPY packages/api packages/api
 RUN pnpm --filter @carbooking/api prisma generate
 RUN pnpm --filter @carbooking/api build
