@@ -59,6 +59,7 @@ export default function Footer() {
           <div className="flex gap-4 mt-2 md:mt-0">
             <Link href="/terms" className="hover:text-flame">Terms</Link>
             <Link href="/privacy" className="hover:text-flame">Privacy</Link>
+            <a href="https://bargain-admin.advancedmarketing.co" target="_blank" rel="noreferrer" className="hover:text-flame">Staff login</a>
           </div>
         </div>
       </div>
