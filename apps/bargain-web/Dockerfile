@@ -5,10 +5,10 @@ RUN npm install -g pnpm@9
 # -------- deps --------
 FROM base AS deps
 WORKDIR /repo
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY pnpm-workspace.yaml package.json ./
 COPY packages/sdk/package.json ./packages/sdk/package.json
 COPY apps/bargain-web/package.json ./apps/bargain-web/package.json
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # -------- build sdk --------
 FROM deps AS sdk
