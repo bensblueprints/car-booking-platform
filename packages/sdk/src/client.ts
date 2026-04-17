@@ -20,7 +20,7 @@ export class CarBookingClient {
     this.apiUrl = opts.apiUrl.replace(/\/$/, '');
     this.tenantSlug = opts.tenantSlug;
     this.getToken = opts.getToken;
-    this.fetchFn = opts.fetch ?? fetch;
+    this.fetchFn = opts.fetch ?? fetch.bind(globalThis);
   }
 
   private async req<T>(path: string, init: RequestInit = {}): Promise<T> {
