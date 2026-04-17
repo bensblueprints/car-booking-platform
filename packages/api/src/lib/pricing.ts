@@ -1,10 +1,8 @@
-import { Prisma } from '@prisma/client';
-
 export interface PricingInput {
-  dailyRate: Prisma.Decimal | number | string;
-  weeklyRate?: Prisma.Decimal | number | string | null;
-  monthlyRate?: Prisma.Decimal | number | string | null;
-  depositAmount: Prisma.Decimal | number | string;
+  dailyRate: any | number | string;
+  weeklyRate?: any | number | string | null;
+  monthlyRate?: any | number | string | null;
+  depositAmount: any | number | string;
   start: Date;
   end: Date;
   fees?: {
@@ -28,7 +26,7 @@ export interface Quote {
   breakdown: Array<{ label: string; amount: number }>;
 }
 
-const dec = (v: Prisma.Decimal | number | string | null | undefined): number =>
+const dec = (v: any | number | string | null | undefined): number =>
   v == null ? 0 : typeof v === 'number' ? v : Number(v.toString());
 
 /** Round to 2 decimal places. Avoids FP drift by going through cents. */
