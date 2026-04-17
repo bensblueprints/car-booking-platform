@@ -31,9 +31,10 @@ ENV HOSTNAME=0.0.0.0
 
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 
-COPY --from=build /repo/apps/bargain-web/public ./public
+RUN mkdir -p apps/bargain-web/public
 COPY --from=build --chown=nextjs:nodejs /repo/apps/bargain-web/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /repo/apps/bargain-web/.next/static ./apps/bargain-web/.next/static
+COPY --from=build --chown=nextjs:nodejs /repo/apps/bargain-web/public ./apps/bargain-web/public
 
 USER nextjs
 EXPOSE 3000
