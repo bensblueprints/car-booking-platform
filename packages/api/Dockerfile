@@ -8,7 +8,9 @@ COPY packages/api/prisma packages/api/prisma
 ENV NODE_ENV=development
 RUN pnpm install --filter @carbooking/api... --frozen-lockfile=false --prod=false
 COPY packages/api packages/api
-RUN pnpm --filter @carbooking/api prisma generate
+WORKDIR /app/packages/api
+RUN npx prisma generate
+WORKDIR /app
 RUN pnpm --filter @carbooking/api build
 
 FROM node:20-alpine AS runner
@@ -24,4 +26,4 @@ COPY --from=builder /app/node_modules node_modules
 COPY --from=builder /app/packages/api/node_modules packages/api/node_modules
 EXPOSE 4000
 WORKDIR /app/packages/api
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss --skip-generate && node dist/server.js"]
