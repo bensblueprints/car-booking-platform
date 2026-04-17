@@ -26,7 +26,7 @@ export default function Hero() {
       {/* Floating decorative car silhouette */}
       <motion.div
         aria-hidden
-        className="absolute right-0 top-1/3 w-[60vw] max-w-[800px] aspect-[16/9] -z-10 opacity-[0.08] blur-[2px] animate-float"
+        className="absolute right-0 top-1/3 w-[60vw] max-w-[800px] aspect-[16/9] -z-10 opacity-[0.08] blur-[2px]"
         style={{ y: parallax, backgroundImage: "url(https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1600&q=80)", backgroundSize: 'cover', backgroundPosition: 'center', maskImage: 'linear-gradient(to left, black 30%, transparent 90%)' }}
       />
 
