@@ -104,6 +104,8 @@ model Car {
 
   status        String   @default("active") // active | maintenance | retired
   description   String?
+  vin           String?
+  licensePlate  String?
 
   bookings      Booking[]
   reviews       Review[]

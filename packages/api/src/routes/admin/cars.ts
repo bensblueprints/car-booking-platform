@@ -23,6 +23,8 @@ const carSchema = z.object({
   locationId: z.string().optional().nullable(),
   status: z.enum(['active', 'maintenance', 'retired']).default('active'),
   description: z.string().optional().nullable(),
+  vin: z.string().optional().nullable(),
+  licensePlate: z.string().optional().nullable(),
 });
 
 export default async function adminCarRoutes(app: FastifyInstance) {
