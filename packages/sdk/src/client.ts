@@ -106,8 +106,12 @@ export class CarBookingClient {
     booking: (id: string) => this.req<Booking>(`/v1/admin/bookings/${id}`),
     createBooking: (body: any) =>
       this.req<Booking>(`/v1/admin/bookings`, { method: 'POST', body: JSON.stringify(body) }),
-    updateBooking: (id: string, body: { status?: string; notes?: string }) =>
+    updateBooking: (id: string, body: { status?: string; notes?: string; contractUrl?: string | null; documents?: string[] }) =>
       this.req<Booking>(`/v1/admin/bookings/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+    markBookingPaid: (id: string, method: 'cash' | 'card_at_location' | 'check' | 'other' = 'cash') =>
+      this.req<Booking>(`/v1/admin/bookings/${id}/mark-paid`, { method: 'POST', body: JSON.stringify({ method }) }),
+    bookingPaymentLink: (id: string) =>
+      this.req<{ url: string; reused: boolean }>(`/v1/admin/bookings/${id}/payment-link`, { method: 'POST' }),
 
     reviews: (approved?: boolean) => this.req<Review[]>(`/v1/admin/reviews${approved !== undefined ? `?approved=${approved}` : ''}`),
     updateReview: (id: string, body: { approved?: boolean; adminReply?: string }) =>

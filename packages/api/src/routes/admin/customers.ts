@@ -10,6 +10,8 @@ const createSchema = z.object({
   dateOfBirth: z.string().optional().nullable(),
   licenseNumber: z.string().optional().nullable(),
   licenseExpiry: z.string().optional().nullable(),
+  // Data URL (base64) or http(s) URL.
+  licenseImage: z.string().optional().nullable(),
   password: z.string().min(8).optional(),
 });
 

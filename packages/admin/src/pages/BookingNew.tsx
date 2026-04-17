@@ -13,7 +13,7 @@ export default function BookingNew() {
   const nav = useNavigate();
   const [params] = useSearchParams();
   const [form, setForm] = useState({
-    userId: '',
+    userId: params.get('userId') ?? '',
     carId: params.get('carId') ?? '',
     start: today(0),
     end: today(2),

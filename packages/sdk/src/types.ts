@@ -104,6 +104,11 @@ export interface Booking {
   totalAmount: string;
   status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'refunded';
   stripePaymentId: string | null;
+  stripePaymentLinkUrl?: string | null;
+  paymentMethod?: string | null;
+  paidAt?: string | null;
+  contractUrl?: string | null;
+  documents?: string[];
   notes: string | null;
   createdAt: string;
 }

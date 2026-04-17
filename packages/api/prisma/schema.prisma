@@ -174,7 +174,12 @@ model Booking {
 
   stripePaymentId   String?
   stripeDepositId   String?
+  stripePaymentLinkUrl String?
+  paymentMethod     String?  // stripe | cash | card_at_location | check | other
+  paidAt            DateTime?
   notes             String?
+  contractUrl       String?
+  documents         String[]
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt

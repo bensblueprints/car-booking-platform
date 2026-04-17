@@ -2,10 +2,19 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { quoteBooking } from '../../lib/pricing.js';
 import { isCarAvailable } from '../../lib/availability.js';
+import { getStripe, stripeConfigured } from '../../lib/stripe.js';
 
 const updateSchema = z.object({
   status: z.enum(['pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'refunded']).optional(),
   notes: z.string().max(2000).optional(),
+  // Data URL or http(s) URL to the signed rental agreement.
+  contractUrl: z.string().optional().nullable(),
+  // Additional document URLs/data URLs (inspection photos, misc receipts).
+  documents: z.array(z.string()).optional(),
+});
+
+const markPaidSchema = z.object({
+  method: z.enum(['cash', 'card_at_location', 'check', 'other']).default('cash'),
 });
 
 const createSchema = z.object({
@@ -118,6 +127,64 @@ export default async function adminBookingRoutes(app: FastifyInstance) {
       },
     });
     return booking;
+  });
+
+  // Mark an in-person payment. Sets status=confirmed, paidAt=now, paymentMethod.
+  app.post('/v1/admin/bookings/:id/mark-paid', { preHandler: [app.requireAdmin] }, async (req, reply) => {
+    const { id } = req.params as { id: string };
+    const parsed = markPaidSchema.safeParse(req.body ?? {});
+    if (!parsed.success) return reply.code(400).send({ error: 'Invalid input' });
+    const booking = await app.prisma.booking.findFirst({ where: { id, tenantId: req.tenantId } });
+    if (!booking) return reply.code(404).send({ error: 'Booking not found' });
+    return app.prisma.booking.update({
+      where: { id },
+      data: {
+        paymentMethod: parsed.data.method,
+        paidAt: new Date(),
+        status: booking.status === 'pending' ? 'confirmed' : booking.status,
+      },
+    });
+  });
+
+  // Generate a Stripe Payment Link the customer can pay with later (email/SMS).
+  app.post('/v1/admin/bookings/:id/payment-link', { preHandler: [app.requireAdmin] }, async (req, reply) => {
+    if (!stripeConfigured()) return reply.code(400).send({ error: 'Stripe not configured for this tenant' });
+    const { id } = req.params as { id: string };
+    const booking = await app.prisma.booking.findFirst({
+      where: { id, tenantId: req.tenantId },
+      include: { car: { select: { make: true, model: true, year: true } }, user: { select: { email: true, firstName: true, lastName: true } } },
+    });
+    if (!booking) return reply.code(404).send({ error: 'Booking not found' });
+
+    // If we already created one, return it instead of burning a new product.
+    if (booking.stripePaymentLinkUrl) {
+      return { url: booking.stripePaymentLinkUrl, reused: true };
+    }
+
+    const stripe = getStripe();
+    const tenant = await app.prisma.tenant.findUnique({ where: { id: req.tenantId } });
+    const currency = (tenant?.currency ?? 'USD').toLowerCase();
+
+    const price = await stripe.prices.create({
+      currency,
+      unit_amount: Math.round(Number(booking.totalAmount) * 100),
+      product_data: {
+        name: `${booking.car.year} ${booking.car.make} ${booking.car.model} — Booking ${booking.id.slice(0, 8)}`,
+      },
+    });
+
+    const link = await stripe.paymentLinks.create({
+      line_items: [{ price: price.id, quantity: 1 }],
+      metadata: { bookingId: booking.id, tenantId: req.tenantId },
+      after_completion: { type: 'hosted_confirmation', hosted_confirmation: { custom_message: 'Thank you — your booking is confirmed.' } },
+    });
+
+    await app.prisma.booking.update({
+      where: { id: booking.id },
+      data: { stripePaymentLinkUrl: link.url },
+    });
+
+    return { url: link.url, reused: false };
   });
 
   app.patch('/v1/admin/bookings/:id', { preHandler: [app.requireAdmin] }, async (req, reply) => {
