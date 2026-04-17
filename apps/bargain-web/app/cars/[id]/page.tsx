@@ -29,7 +29,7 @@ export default async function CarDetail({ params }: { params: { id: string } }) 
   const avgRating =
     reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : null;
 
-  const hero = car.images[0] ?? 'https://images.unsplash.com/photo-1549194822-b9a7a4b4ffba?auto=format&fit=crop&w=2000&q=80';
+  const hero = car.images[0] ?? 'https://images.unsplash.com/photo-1485395037613-e83d5c1f5290?auto=format&fit=crop&w=2000&q=80';
   const gallery = car.images.slice(1, 5);
 
   return (

@@ -4,7 +4,7 @@ import type { Car } from '@carbooking/sdk';
 import { Users, Fuel, Cog } from 'lucide-react';
 
 export default function CarCard({ car }: { car: Car }) {
-  const img = car.images[0] ?? 'https://images.unsplash.com/photo-1549194822-b9a7a4b4ffba?auto=format&fit=crop&w=1200&q=80';
+  const img = car.images[0] ?? 'https://images.unsplash.com/photo-1485395037613-e83d5c1f5290?auto=format&fit=crop&w=1200&q=80';
   return (
     <Link
       href={`/cars/${car.id}`}

@@ -4,9 +4,9 @@ import { ArrowUpRight } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/components/Reveal';
 
 const tiles = [
-  { slug: 'small-car', name: 'Small Car', tagline: 'City-friendly. Sip fuel.', img: 'https://images.unsplash.com/photo-1549194822-b9a7a4b4ffba?auto=format&fit=crop&w=1200&q=80', size: 'md:col-span-2 md:row-span-1' },
+  { slug: 'small-car', name: 'Small Car', tagline: 'City-friendly. Sip fuel.', img: 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80', size: 'md:col-span-2 md:row-span-1' },
   { slug: 'mid-sized-car', name: 'Mid-Sized Car', tagline: 'Road trip ready.', img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=1200&q=80', size: '' },
-  { slug: 'full-sized-suv', name: 'Full-Sized SUV', tagline: 'Haul the whole crew.', img: 'https://images.unsplash.com/photo-1519752594763-2633d46d2bff?auto=format&fit=crop&w=1400&q=80', size: 'md:col-span-2 md:row-span-2' },
+  { slug: 'full-sized-suv', name: 'Full-Sized SUV', tagline: 'Haul the whole crew.', img: 'https://images.unsplash.com/photo-1606611013016-969c19ba27bb?auto=format&fit=crop&w=1400&q=80', size: 'md:col-span-2 md:row-span-2' },
   { slug: 'mid-sized-suv', name: 'Mid-Sized SUV', tagline: 'All-weather capable.', img: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&w=1200&q=80', size: '' },
   { slug: 'minivan', name: 'Minivan', tagline: '7 seats. Room for life.', img: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1200&q=80', size: '' },
   { slug: 'full-sized-car', name: 'Full-Sized Car', tagline: 'Full comfort, full trunk.', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80', size: '' },
