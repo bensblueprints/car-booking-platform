@@ -8,6 +8,7 @@ import { BRAND } from '@/lib/brand';
 const links = [
   { href: '/cars', label: 'Fleet' },
   { href: '/locations', label: 'Locations' },
+  { href: '/reviews', label: 'Reviews' },
   { href: '/about', label: 'About' },
   { href: '/faq', label: 'FAQ' },
   { href: '/contact', label: 'Contact' },
