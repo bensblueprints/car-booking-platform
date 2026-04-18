@@ -316,7 +316,8 @@ export default function BookingFlow({
 
       {step === 'payment' && !clientSecret && (
         <div className="card p-8 text-center">
-          <div className="text-sm text-muted mb-3">Booking confirmed — no payment required online.</div>
+          <h2 className="font-display text-xl mb-3">4. Payment</h2>
+          <div className="text-sm text-muted mb-4">This payment was simulated.</div>
           <button onClick={() => setStep('done')} className="btn-primary mx-auto">
             Continue <ArrowRight size={16} />
           </button>
