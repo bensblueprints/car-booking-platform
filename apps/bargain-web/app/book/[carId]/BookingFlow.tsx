@@ -42,7 +42,7 @@ export default function BookingFlow({
   const [step, setStep] = useState<Step>('dates');
   const [start, setStart] = useState(toDateInput(defaultStart, 1));
   const [end, setEnd] = useState(toDateInput(defaultEnd, 4));
-  const [youngDriver, setYoungDriver] = useState(defaultYoungDriver ?? false);
+  const youngDriver = false; // Bargain only requires 21+; no under-25 surcharge.
 
   const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
   const [form, setForm] = useState({
@@ -58,6 +58,18 @@ export default function BookingFlow({
     licenseExpiry: '',
     dateOfBirth: '',
   });
+  const [ageError, setAgeError] = useState<string | null>(null);
+
+  const calcAge = (dob: string) => {
+    if (!dob) return 0;
+    const birth = new Date(dob);
+    if (isNaN(birth.getTime())) return 0;
+    const now = new Date();
+    let age = now.getFullYear() - birth.getFullYear();
+    const m = now.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+    return age;
+  };
 
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -164,25 +176,21 @@ export default function BookingFlow({
               />
             </Field>
           </div>
-          <label className="flex items-center gap-2 mt-4 text-sm cursor-pointer">
-            <input
-              type="checkbox"
-              checked={youngDriver}
-              onChange={(e) => setYoungDriver(e.target.checked)}
-              className="rounded border-line bg-ink-900"
-            />
-            <span>Primary driver is under 25 (+$25/day)</span>
-          </label>
+          <div className="mt-4 p-3 rounded-lg border border-line bg-ink-900/40 text-xs text-muted">
+            Drivers must be 21+ with a valid license. You pay the deposit today — your rental cost is deducted from it at return, and the balance is refunded.
+          </div>
 
           {liveQuote.data?.available && (
             <div className="mt-6 p-4 rounded-lg border border-line bg-ink-900/60 text-sm">
-              <div className="flex justify-between"><span className="text-muted">Subtotal</span><span>${liveQuote.data.quote.subtotal}</span></div>
+              <div className="flex justify-between"><span className="text-muted">Rental ({liveQuote.data.quote.days} day{liveQuote.data.quote.days > 1 ? 's' : ''})</span><span>${liveQuote.data.quote.subtotal}</span></div>
               {Number(liveQuote.data.quote.fees) > 0 && (
                 <div className="flex justify-between"><span className="text-muted">Fees</span><span>${liveQuote.data.quote.fees}</span></div>
               )}
-              <div className="flex justify-between"><span className="text-muted">Tax</span><span>${liveQuote.data.quote.taxes}</span></div>
-              <div className="flex justify-between"><span className="text-muted">Deposit (refundable)</span><span>${liveQuote.data.quote.depositHeld}</span></div>
-              <div className="flex justify-between font-display text-lg mt-2 pt-2 border-t border-line"><span>Total</span><span>${liveQuote.data.quote.totalAmount}</span></div>
+              {Number(liveQuote.data.quote.taxes) > 0 && (
+                <div className="flex justify-between"><span className="text-muted">Tax</span><span>${liveQuote.data.quote.taxes}</span></div>
+              )}
+              <div className="flex justify-between text-muted text-xs mt-2 pt-2 border-t border-line"><span>Rental total (deducted from deposit at return)</span><span>${liveQuote.data.quote.totalAmount}</span></div>
+              <div className="flex justify-between font-display text-lg mt-2"><span>Deposit charged today</span><span>${liveQuote.data.quote.depositHeld}</span></div>
             </div>
           )}
 
@@ -264,16 +272,22 @@ export default function BookingFlow({
       {step === 'license' && (
         <div className="card p-6 md:p-8">
           <h2 className="font-display text-xl mb-2">3. Driver's license</h2>
-          <p className="text-sm text-muted mb-5">Required at pickup. We verify your license but never run a credit check.</p>
+          <p className="text-sm text-muted mb-5">Must be 21 or older with a valid license. We verify at pickup — no credit check.</p>
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              const age = calcAge(license.dateOfBirth);
+              if (age < 21) {
+                setAgeError('Drivers must be at least 21 years old to rent.');
+                return;
+              }
+              setAgeError(null);
               licenseMut.mutate();
             }}
             className="space-y-3"
           >
             <Field label="Date of birth">
-              <input required type="date" value={license.dateOfBirth} onChange={(e) => setLicense({ ...license, dateOfBirth: e.target.value })} className="input" />
+              <input required type="date" value={license.dateOfBirth} onChange={(e) => { setLicense({ ...license, dateOfBirth: e.target.value }); setAgeError(null); }} className="input" />
             </Field>
             <Field label="Driver's license number">
               <input required value={license.licenseNumber} onChange={(e) => setLicense({ ...license, licenseNumber: e.target.value })} className="input" />
@@ -282,6 +296,12 @@ export default function BookingFlow({
               <input required type="date" value={license.licenseExpiry} onChange={(e) => setLicense({ ...license, licenseExpiry: e.target.value })} className="input" />
             </Field>
 
+            {ageError && (
+              <div className="p-3 rounded-lg border border-flame/40 bg-flame/5 text-sm flex gap-2">
+                <AlertCircle size={16} className="text-flame flex-shrink-0" />
+                {ageError}
+              </div>
+            )}
             {(licenseMut.error || createBookingMut.error) && (
               <div className="p-3 rounded-lg border border-flame/40 bg-flame/5 text-sm flex gap-2">
                 <AlertCircle size={16} className="text-flame flex-shrink-0" />
@@ -317,7 +337,10 @@ export default function BookingFlow({
       {step === 'payment' && !clientSecret && (
         <div className="card p-8 text-center">
           <h2 className="font-display text-xl mb-3">4. Payment</h2>
-          <div className="text-sm text-muted mb-4">This payment was simulated.</div>
+          <div className="text-sm text-muted mb-2">This payment was simulated.</div>
+          <div className="text-xs text-muted max-w-md mx-auto mb-5">
+            In production, your deposit is charged today and your rental cost is deducted from it at return — any remaining balance is refunded.
+          </div>
           <button onClick={() => setStep('done')} className="btn-primary mx-auto">
             Continue <ArrowRight size={16} />
           </button>
