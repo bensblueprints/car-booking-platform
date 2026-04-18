@@ -2,7 +2,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Phone, Shield, Clock, Award } from 'lucide-react';
+import { ArrowRight, Phone, Shield, Clock, Award, Star } from 'lucide-react';
 import SearchWidget from '@/components/SearchWidget';
 import Counter from '@/components/Counter';
 import { BRAND } from '@/lib/brand';
@@ -68,13 +68,30 @@ export default function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 1.1 }}
-          className="mt-8 flex flex-wrap gap-3"
+          className="mt-8 flex flex-wrap items-center gap-3"
         >
           <Link href="/cars" className="btn-primary group">
             Browse the fleet <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
           </Link>
           <a href={BRAND.phoneLink} className="btn-ghost">
             <Phone size={14} /> {BRAND.phone}
+          </a>
+          <a
+            href="https://share.google/S5cyvvWkex4CAW1c3"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-line bg-ink-900/60 hover:border-gold/60 hover:bg-ink-800 transition text-sm group"
+            aria-label="View our reviews on Google"
+          >
+            <span className="flex items-center gap-0.5 text-gold">
+              <Star size={14} fill="currentColor" strokeWidth={0} />
+              <Star size={14} fill="currentColor" strokeWidth={0} />
+              <Star size={14} fill="currentColor" strokeWidth={0} />
+              <Star size={14} fill="currentColor" strokeWidth={0} />
+              <Star size={14} fill="currentColor" strokeWidth={0} className="opacity-60" />
+            </span>
+            <span className="font-semibold">4.4</span>
+            <span className="text-muted text-xs">(144 Google reviews)</span>
           </a>
         </motion.div>
 
@@ -98,7 +115,7 @@ export default function Hero() {
           <Stat icon={Award} value={<><Counter to={new Date().getFullYear() - BRAND.founded} />+</>} label="Years family-owned" />
           <Stat icon={Clock} value={<>24<span className="text-muted text-lg">/7</span></>} label="Online booking" />
           <Stat icon={Shield} value={<><Counter to={0} suffix="" /> hidden</>} label="Fees, ever" />
-          <Stat icon={Award} value={<>5<span className="text-gold">★</span></>} label="Same-day service" />
+          <Stat icon={Star} value={<>4.4<span className="text-gold">★</span></>} label="144 Google reviews" />
         </motion.div>
       </motion.div>
     </section>
